@@ -32,9 +32,33 @@ public class ProjectionTable extends Table {
         if (tab_projecting_on instanceof ProjectionTable) {
             return new ProjectionTable(((ProjectionTable) tab_projecting_on).tab_projecting_on.optimize(),
                     attr_names);
-        } /*else if (tab_projecting_on instanceof JoinTable) {
+        }/* else if (tab_projecting_on instanceof JoinTable) {
             // distribute projection over join
+            JoinTable joinTab = (JoinTable) tab_projecting_on;
 
+            ArrayList<String> firstTabProjCols = new ArrayList<>();
+            ArrayList<String> secondTabProjCols = new ArrayList<>();
+
+            // find what table the projection columns originated from before the join
+            for(String projColName : this.attr_names) {
+                for(String joinColName : joinTab.first_join_tab.attr_names) {
+                    if(joinColName.equalsIgnoreCase(projColName)){
+                        firstTabProjCols.add(projColName);
+                    }
+                }
+
+                for(String joinColName : joinTab.second_join_tab.attr_names) {
+                    if(joinColName.equalsIgnoreCase(projColName)){
+                        secondTabProjCols.add(projColName);
+                    }
+                }
+            }
+
+            // find the columns that are needed for the join to happen
+
+
+            ProjectionTable tab1 = new ProjectionTable();
+            ProjectionTable tab2 = new ProjectionTable();
         }*/ else {
             tab_projecting_on = tab_projecting_on.optimize();
             return this;

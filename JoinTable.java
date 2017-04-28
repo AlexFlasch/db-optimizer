@@ -22,7 +22,7 @@ public class JoinTable extends Table {
      */
     public JoinTable(Table t1, Table t2, Conditional c) {
 
-        super("Joining " + t1.toString() + " " + t2.toString() + " on condiition " + c.toString());
+        super("Joining " + t1.toString() + " " + t2.toString() + (c == null ? "with a natural join" : " on condition " + c.toString()));
         first_join_tab = t1;
         second_join_tab = t2;
         joinCondition = c;
@@ -39,7 +39,7 @@ public class JoinTable extends Table {
         attr_types = new String[typesLength];
         List<String> temp1 = new ArrayList<>();
         temp1.addAll(Arrays.asList(t1.attr_types));
-        temp1.addAll(Arrays.asList(t2.attr_names));
+        temp1.addAll(Arrays.asList(t2.attr_types));
         temp1.toArray(attr_types);
     }
 
@@ -55,18 +55,23 @@ public class JoinTable extends Table {
     public ArrayList<Tuple> evaluate() {
         ArrayList<Tuple> tuples_to_return = new ArrayList<Tuple>();
 
-        // Here you need to add the correct tuples to tuples_to_return
-        // for this operation
+        // if the join condition is null perform a natural join
+        if(joinCondition == null) {
+            for (Tuple tup1 : first_join_tab.evaluate()) {
+                for (Tuple tup2 : second_join_tab.evaluate()) {
+                    Tuple tempTuple = Tuple.combine(tup1, tup2);
 
-        // It should be done with an efficient algorithm based on
-        // sorting or hashing
-
-        for (Tuple tup1 : first_join_tab.evaluate()) {
-            for (Tuple tup2 : second_join_tab.evaluate()) {
-                Tuple tempTuple = Tuple.combine(tup1, tup2);
-
-                if(joinCondition.truthVal(tempTuple)) {
                     tuples_to_return.add(tempTuple);
+                }
+            }
+        } else {
+            for (Tuple tup1 : first_join_tab.evaluate()) {
+                for (Tuple tup2 : second_join_tab.evaluate()) {
+                    Tuple tempTuple = Tuple.combine(tup1, tup2);
+
+                    if(joinCondition.truthVal(tempTuple)) {
+                        tuples_to_return.add(tempTuple);
+                    }
                 }
             }
         }

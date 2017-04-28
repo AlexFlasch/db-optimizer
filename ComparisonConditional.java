@@ -3,8 +3,8 @@
  */
 public abstract class ComparisonConditional {
 
-    CondLeaf left;
-    CondLeaf right;
+    public CondLeaf left;
+    public CondLeaf right;
 
     /**
      * @param left  - the left operand of this comparison operator.
