@@ -26,8 +26,16 @@ public class DupsRemovedTable extends Table {
     }
 
     public Table optimize() {
-        // Right now no optimization is done -- you'll need to improve this
-        return this;
+        if(tab_dups_removed_from instanceof JoinTable) {
+            JoinTable joinTab = (JoinTable) tab_dups_removed_from;
+
+            DupsRemovedTable dupRemovedTab1 = new DupsRemovedTable(joinTab.first_join_tab);
+            DupsRemovedTable dupRemovedTab2 = new DupsRemovedTable(joinTab.second_join_tab);
+
+            return new JoinTable(dupRemovedTab1, dupRemovedTab2, joinTab.joinCondition);
+        } else {
+            return this;
+        }
     }
 
     public ArrayList<Tuple> evaluate() {
