@@ -214,7 +214,7 @@ public class TestHarness {
         return pt;
     }
 
-    // 13 - Complicated Join that can be optimized
+    // 13 - Complicate5d Join that can be optimized
     static Table BuildTest13() throws QueryException {
         TableInDB tb1 = new TableInDB("Table1");
         TableInDB tb2 = new TableInDB("Table2");

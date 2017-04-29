@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ListIterator;
 
 /**
@@ -10,7 +11,6 @@ public class SelectTable extends Table {
 
     Table tab_selecting_on;
     Conditional select_cond;
-    ;
 
     /**
      * @param t - the table we are selecting from
@@ -32,6 +32,16 @@ public class SelectTable extends Table {
     }
 
     public Table optimize() {
+        try {
+            if (select_cond instanceof ANDConditional) {
+                ComparisonConditional[] c = ((ANDConditional) select_cond).my_conds;
+                Conditional current = (Conditional) c[0];
+                ComparisonConditional[] next = Arrays.copyOfRange(c,1,c.length);
+                ANDConditional a = new ANDConditional(next);
+                return new SelectTable(new SelectTable(tab_selecting_on, a).optimize(), current);
+            }
+        } catch (QueryException q){}
+
         return this;
     }
 
@@ -40,8 +50,9 @@ public class SelectTable extends Table {
         if (select_cond instanceof ANDConditional) {
             for (int i = 0; i < ((ANDConditional) select_cond).my_conds.length; i++)
                 ((ANDConditional) select_cond).my_conds[i].set_both_leaves_table(tab_selecting_on);
-        } else
+        } else {
             ((ComparisonConditional) select_cond).set_both_leaves_table(tab_selecting_on);
+        }
         ArrayList<Tuple> tuples1 = tab_selecting_on.evaluate();
         ArrayList<Tuple> tuples_to_return = new ArrayList<Tuple>();
         ListIterator iterate_tuples = tuples1.listIterator(0);
