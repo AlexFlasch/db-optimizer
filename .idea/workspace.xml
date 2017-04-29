@@ -5,7 +5,6 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/assignment4-distro/DupsRemovedTable.class" afterPath="$PROJECT_DIR$/out/production/assignment4-distro/DupsRemovedTable.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/assignment4-distro/ProjectionTable.class" afterPath="$PROJECT_DIR$/out/production/assignment4-distro/ProjectionTable.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DupsRemovedTable.java" afterPath="$PROJECT_DIR$/DupsRemovedTable.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -615,7 +614,14 @@
       <option name="project" value="LOCAL" />
       <updated>1493436179929</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Duplication Removal optimiaztion is &quot;done&quot;.">
+      <created>1493438321749</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1493438321749</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -658,7 +664,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Evaluates work, Projection optimization in progress" />
     <MESSAGE value="Projection optimiaztion is &quot;done&quot;." />
-    <option name="LAST_COMMIT_MESSAGE" value="Projection optimiaztion is &quot;done&quot;." />
+    <MESSAGE value="Duplication Removal optimiaztion is &quot;done&quot;." />
+    <option name="LAST_COMMIT_MESSAGE" value="Duplication Removal optimiaztion is &quot;done&quot;." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
