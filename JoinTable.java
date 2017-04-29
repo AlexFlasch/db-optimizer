@@ -49,7 +49,13 @@ public class JoinTable extends Table {
 
     public Table optimize() {
         // Right now no optimization is done -- you'll need to improve this
-        return this;
+
+        // join the table that has the least amount of columns as the outer table
+        if(first_join_tab.attr_names.length < second_join_tab.attr_names.length) {
+            return this;
+        } else {
+            return new JoinTable(second_join_tab, first_join_tab, this.joinCondition);
+        }
     }
 
     public ArrayList<Tuple> evaluate() {
