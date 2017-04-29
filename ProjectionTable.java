@@ -1,5 +1,8 @@
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ListIterator;
+import java.util.stream.Collectors;
 
 /**
  * ProjectionTable - this class implements the projection operation of a
@@ -32,34 +35,56 @@ public class ProjectionTable extends Table {
         if (tab_projecting_on instanceof ProjectionTable) {
             return new ProjectionTable(((ProjectionTable) tab_projecting_on).tab_projecting_on.optimize(),
                     attr_names);
-        }/* else if (tab_projecting_on instanceof JoinTable) {
+        } else if (tab_projecting_on instanceof JoinTable &&
+                (!((ComparisonConditional) ((JoinTable) tab_projecting_on).joinCondition).left.isConstant() ||
+                !((ComparisonConditional) ((JoinTable) tab_projecting_on).joinCondition).right.isConstant())) {
             // distribute projection over join
             JoinTable joinTab = (JoinTable) tab_projecting_on;
 
-            ArrayList<String> firstTabProjCols = new ArrayList<>();
-            ArrayList<String> secondTabProjCols = new ArrayList<>();
+            String[] projList = this.attr_names;
 
-            // find what table the projection columns originated from before the join
-            for(String projColName : this.attr_names) {
-                for(String joinColName : joinTab.first_join_tab.attr_names) {
-                    if(joinColName.equalsIgnoreCase(projColName)){
-                        firstTabProjCols.add(projColName);
-                    }
-                }
+            boolean hasOverlap = false;
 
-                for(String joinColName : joinTab.second_join_tab.attr_names) {
-                    if(joinColName.equalsIgnoreCase(projColName)){
-                        secondTabProjCols.add(projColName);
-                    }
+            for(String projCol : projList) {
+                String projAttr = projCol.split("\\.")[1];
+
+                List<String> tab1ColNames = Arrays.stream(joinTab.first_join_tab.attr_names).map(name -> name.split("\\.")[1]).collect(Collectors.toList());
+                List<String> tab2ColNames = Arrays.stream(joinTab.second_join_tab.attr_names).map(name -> name.split("\\.")[1]).collect(Collectors.toList());
+
+                boolean tab1HasProjCol = tab1ColNames.stream().filter(name -> name.equalsIgnoreCase(projAttr)).collect(Collectors.toList()).size() > 0;
+                boolean tab2HasProjCol = tab2ColNames.stream().filter(name -> name.equalsIgnoreCase(projAttr)).collect(Collectors.toList()).size() > 0;
+
+                if(tab1HasProjCol && tab2HasProjCol) {
+                    hasOverlap = true;
+                    break;
                 }
             }
 
-            // find the columns that are needed for the join to happen
+            ComparisonConditional joinCond = (ComparisonConditional) joinTab.joinCondition;
 
+            boolean joinCondWillBeRemoved = false;
+            boolean joinCondIsConstant = false;
 
-            ProjectionTable tab1 = new ProjectionTable();
-            ProjectionTable tab2 = new ProjectionTable();
-        }*/ else {
+            if(joinCond.left.isConstant() || joinCond.right.isConstant()) {
+                joinCondIsConstant = true;
+            } else {
+                joinCondWillBeRemoved = Arrays.stream(projList).filter(name -> joinCond.left.attrib_name.equalsIgnoreCase(name)).collect(Collectors.toList()).size() > 0
+                        || Arrays.stream(projList).filter(name -> joinCond.right.attrib_name.equalsIgnoreCase(name)).collect(Collectors.toList()).size() > 0;
+            }
+
+            if(hasOverlap || joinCondIsConstant || joinCondWillBeRemoved) {
+                return this;
+            } else {
+                // find the col names of each table to be projected
+                List<String> tab1ProjCols = Arrays.stream(projList).filter(Arrays.asList(joinTab.first_join_tab.attr_names)::contains).collect(Collectors.toList());
+                List<String> tab2ProjCols = Arrays.stream(projList).filter(Arrays.asList(joinTab.second_join_tab.attr_names)::contains).collect(Collectors.toList());
+
+                return new JoinTable(
+                        new ProjectionTable(joinTab.first_join_tab, tab1ProjCols.toArray(new String[tab1ProjCols.size() - 1])),
+                        new ProjectionTable(joinTab.second_join_tab, tab2ProjCols.toArray(new String[tab2ProjCols.size() - 1])),
+                        joinTab.joinCondition);
+            }
+        } else {
             tab_projecting_on = tab_projecting_on.optimize();
             return this;
         }
